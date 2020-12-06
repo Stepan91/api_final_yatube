@@ -5,18 +5,25 @@ from rest_framework.fields import CurrentUserDefault
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='author.username')
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+
 
     class Meta:
-        fields = ('id', 'text', 'author', 'pub_date')
+        fields = '__all__'
         model = Post
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='author.username')
-
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+    
     class Meta:
-        fields = ('id', 'author', 'post', 'text', 'created')
+        fields = '__all__'
         model = Comment
 
 
@@ -39,22 +46,16 @@ class FollowSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user = self.context['request'].user
         following = data['following']
-        check_follow = Follow.objects.filter(user=user, following=following)
         if user == following:
             raise serializers.ValidationError("Подписка самого на себя невозможна!")
-        if check_follow.exists():
-            raise serializers.ValidationError("Подписка уже создана!")
         return data
 
     class Meta:
         fields = ('user', 'following',)
         model = Follow
-        # сделал валидацию такой сначала, 
-        # но тест на уже подписанного автора не проходил
-        """ validators = [
+        validators = [
             UniqueTogetherValidator(
                 queryset=Follow.objects.all(), 
                 fields=('user', 'following')
                 )
-        ] """
-        validators = []
+        ]
