@@ -21,14 +21,16 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
     )
-    
+
+
     class Meta:
         fields = '__all__'
         model = Comment
 
 
 class GroupSerializer(serializers.ModelSerializer):
-    
+
+
     class Meta:
         fields = ('id', 'title',)
         model = Group
@@ -40,7 +42,10 @@ class FollowSerializer(serializers.ModelSerializer):
                         read_only=True,
                         default = CurrentUserDefault()
                         )
-    following = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    following = serializers.SlugRelatedField(
+                        slug_field='username', 
+                        queryset=User.objects.all()
+                        )
 
 
     def validate(self, data):
@@ -49,6 +54,7 @@ class FollowSerializer(serializers.ModelSerializer):
         if user == following:
             raise serializers.ValidationError("Подписка самого на себя невозможна!")
         return data
+
 
     class Meta:
         fields = ('user', 'following',)
