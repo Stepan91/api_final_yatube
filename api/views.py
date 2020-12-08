@@ -38,13 +38,13 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class FollowAndGroup(viewsets.ModelViewSet,
+class DefaultViewSet(viewsets.ModelViewSet,
                     mixins.CreateModelMixin, 
                     mixins.ListModelMixin):
-    http_method_names = ['get', 'post']
+    None
 
 
-class FollowViewSet(FollowAndGroup):
+class FollowViewSet(DefaultViewSet):
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
@@ -60,7 +60,7 @@ class FollowViewSet(FollowAndGroup):
         serializer.save(user=self.request.user)
 
 
-class GroupViewSet(FollowAndGroup):
+class GroupViewSet(DefaultViewSet):
     serializer_class = GroupSerializer
 
 
