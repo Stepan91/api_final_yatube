@@ -16,7 +16,7 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['group']
 
-  
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -38,13 +38,13 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class DefaultViewSet(viewsets.ModelViewSet,
-                    mixins.CreateModelMixin, 
-                    mixins.ListModelMixin):
-    None
+class BaseCreateListViewSet(viewsets.ModelViewSet,
+                            mixins.CreateModelMixin, 
+                            mixins.ListModelMixin):
+    pass
 
 
-class FollowViewSet(DefaultViewSet):
+class FollowViewSet(BaseCreateListViewSet):
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
@@ -60,7 +60,7 @@ class FollowViewSet(DefaultViewSet):
         serializer.save(user=self.request.user)
 
 
-class GroupViewSet(DefaultViewSet):
+class GroupViewSet(BaseCreateListViewSet):
     serializer_class = GroupSerializer
 
 
